@@ -13,11 +13,11 @@ gem install elelem-github
 ## Use
 
 ```sh
-export GITHUB_API_KEY=...
+export GITHUB_TOKEN=...
 elelem -p github --model MODEL
 ```
 
-* `GITHUB_API_KEY` (required): a GitHub token with the `models:read` permission, from https://github.com/settings/tokens
+* `GH_TOKEN` or `GITHUB_TOKEN` (required, `GH_TOKEN` wins, as in `gh`): a GitHub token with the `models:read` permission, from https://github.com/settings/tokens
 * `GITHUB_MODEL`: the model, when `--model` is not given
 * `GITHUB_BASE_URL`: overrides `https://models.github.ai/inference`
 

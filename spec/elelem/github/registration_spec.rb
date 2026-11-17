@@ -2,15 +2,16 @@
 
 RSpec.describe "the github provider" do
   around do |example|
-    saved = ENV.to_h.slice("GITHUB_API_KEY", "GITHUB_BASE_URL", "GITHUB_MODEL")
+    saved = ENV.to_h.slice("GH_TOKEN", "GITHUB_TOKEN", "GITHUB_BASE_URL", "GITHUB_MODEL")
     example.run
   ensure
-    %w[GITHUB_API_KEY GITHUB_BASE_URL GITHUB_MODEL].each { |k| ENV.delete(k) }
+    %w[GH_TOKEN GITHUB_TOKEN GITHUB_BASE_URL GITHUB_MODEL].each { |k| ENV.delete(k) }
     ENV.update(saved)
   end
 
   before do
-    ENV["GITHUB_API_KEY"] = "test-key"
+    ENV.delete("GH_TOKEN")
+    ENV["GITHUB_TOKEN"] = "test-key"
     ENV["GITHUB_MODEL"] = "env-model"
     ENV.delete("GITHUB_BASE_URL")
   end
@@ -18,6 +19,7 @@ RSpec.describe "the github provider" do
   def build(**) = Elelem::Config.build_provider("github", **)
   def uri(**) = build(**).instance_variable_get(:@uri).to_s
   def model(**) = build(**).instance_variable_get(:@model)
+  def key = build.instance_variable_get(:@api_key)
 
   it "registers provider github" do
     expect(Elelem::Config.names).to include("github")
@@ -28,16 +30,22 @@ RSpec.describe "the github provider" do
     expect(uri).to eq("https://models.github.ai/inference/chat/completions")
   end
 
-  it "sends GITHUB_API_KEY" do
-    expect(build.instance_variable_get(:@api_key)).to eq("test-key")
+  it "sends GITHUB_TOKEN" do
+    expect(key).to eq("test-key")
   end
 
-  it "names GITHUB_API_KEY when the key is missing or empty" do
-    ENV.delete("GITHUB_API_KEY")
-    expect { build }.to raise_error(KeyError, /GITHUB_API_KEY/)
+  it "prefers GH_TOKEN over GITHUB_TOKEN, as gh does" do
+    ENV["GH_TOKEN"] = "gh-key"
+    expect(key).to eq("gh-key")
+  end
 
-    ENV["GITHUB_API_KEY"] = " "
-    expect { build }.to raise_error(KeyError, /GITHUB_API_KEY/)
+  it "names both variables when the token is missing or empty" do
+    ENV.delete("GITHUB_TOKEN")
+    expect { build }.to raise_error(KeyError, /GH_TOKEN or GITHUB_TOKEN/)
+
+    ENV["GITHUB_TOKEN"] = " "
+    ENV["GH_TOKEN"] = ""
+    expect { build }.to raise_error(KeyError, /GH_TOKEN or GITHUB_TOKEN/)
   end
 
   it "names GITHUB_MODEL when no model is set, and treats an empty one as unset" do
