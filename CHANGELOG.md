@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/elelem-sh/github/compare/v0.1.0...v0.2.0) (2026-11-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* read GH_TOKEN or GITHUB_TOKEN, the names gh and GitHub Models use, instead of GITHUB_API_KEY
+
+### Features
+
+* read GH_TOKEN or GITHUB_TOKEN, the names gh and GitHub Models use, instead of GITHUB_API_KEY ([27f18cc](https://github.com/elelem-sh/github/commit/27f18cce15c53a180cca7d58e77c6c7e8963b601))
+
 ## 0.1.0 (2026-11-16)
 
 
